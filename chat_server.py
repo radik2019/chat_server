@@ -24,7 +24,7 @@ def add_socket():
         try:
             client, addr = server_socket.accept()
             client.send("id:  ".encode())
-            name = client.recv(1024).decode()[:-1]
+            name = client.recv(1024).decode()[:-1] + ":: "
 
             list_of_sockets.append(client)
 
@@ -52,8 +52,9 @@ def read_socket():
                             if list_of_sockets[i] == list_of_sockets[k]:
                                 pass
                             else:
-                                request = f"{address_list[i]}:: {request.decode()}".encode()
+                                # request = f"{address_list[i]}:: {request.decode()}".encode()
 
+                                list_of_sockets[k].send(address_list[i].encode())
                                 list_of_sockets[k].send(request)
 
                         print("number of connection = ", len(list_of_sockets))
@@ -64,7 +65,7 @@ def read_socket():
                     continue
 
             except OSError:
-                print(f"{address_list[i]} is quiting..")
+                print(f"{address_list[i][:-3]} is quiting..")
 
                 list_of_sockets.remove(list_of_sockets[i])
                 address_list.remove(address_list[i])
