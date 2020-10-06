@@ -23,10 +23,13 @@ def add_socket():
         server_socket.setblocking(False)
         try:
             client, addr = server_socket.accept()
+            client.send("id:  ".encode())
+            name = client.recv(1024).decode()[:-1]
 
             list_of_sockets.append(client)
-            address_list.append(addr)
-            print("connection from", addr)
+
+            address_list.append(name)
+            print(f"{name} is connected")
         except BlockingIOError:
             continue
 
@@ -49,17 +52,23 @@ def read_socket():
                             if list_of_sockets[i] == list_of_sockets[k]:
                                 pass
                             else:
-                                request = f"{address_list[k]}{request.decode()}".encode()
-                                list_of_sockets[k].sendall(request)
+                                request = f"{address_list[i]}:: {request.decode()}".encode()
+
+                                list_of_sockets[k].send(request)
 
                         print("number of connection = ", len(list_of_sockets))
+                        print(address_list)
                         # list_of_sockets[i].close()
                         continue
                 except BlockingIOError:
                     continue
 
             except OSError:
+                print(f"{address_list[i]} is quiting..")
+
                 list_of_sockets.remove(list_of_sockets[i])
+                address_list.remove(address_list[i])
+                
                 break
 
 
