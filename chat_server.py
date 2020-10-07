@@ -8,7 +8,7 @@ server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 server_socket.bind(("192.168.1.229", 6000))
 
-
+numb_connect = 0
 list_of_sockets = []
 address_list = []
 server_socket.listen()
@@ -17,6 +17,7 @@ print("server is running!!!")
 
 
 def add_socket():
+    global numb_connect
     global list_of_sockets
     while True:
         # print("while loop...")
@@ -30,11 +31,17 @@ def add_socket():
 
             address_list.append(name)
             print(f"{name} is connected")
+            if numb_connect != len(list_of_sockets):
+                print("number of connection = ", len(list_of_sockets))
+                print(address_list)
+                numb_connect = len(list_of_sockets)
         except BlockingIOError:
             continue
 
 
 def read_socket():
+    # numb_connect = 0
+    global numb_connect
     global list_of_sockets
     while True:
 
@@ -56,9 +63,10 @@ def read_socket():
 
                                 list_of_sockets[k].send(address_list[i].encode())
                                 list_of_sockets[k].send(request)
-
-                        print("number of connection = ", len(list_of_sockets))
-                        print(address_list)
+                        if numb_connect != len(list_of_sockets):
+                            print("number of connection = ", len(list_of_sockets))
+                            print(address_list)
+                            numb_connect = len(list_of_sockets)
                         # list_of_sockets[i].close()
                         continue
                 except BlockingIOError:
@@ -67,8 +75,13 @@ def read_socket():
             except OSError:
                 print(f"{address_list[i][:-3]} is quiting..")
 
+
                 list_of_sockets.remove(list_of_sockets[i])
                 address_list.remove(address_list[i])
+                if numb_connect != len(list_of_sockets):
+                    print("number of connection = ", len(list_of_sockets))
+                    print(address_list)
+                    numb_connect = len(list_of_sockets)
                 
                 break
 
