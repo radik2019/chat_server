@@ -1,12 +1,20 @@
 
-
-
+#!/bin/python3/
+import sys
 import socket
 import threading
 
+def get_ip_port(ip_address, port):
+    return (ip_address,port)
+lst = sys.argv
+ip_address = lst[1]
+port = int(lst[2])
+
+
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-server_socket.bind(("192.168.1.229", 6000))
+
+server_socket.bind((ip_address, port))
 
 numb_connect = 0
 list_of_sockets = []
