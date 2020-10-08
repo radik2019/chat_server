@@ -4,11 +4,19 @@ import sys
 import socket
 import threading
 
-def get_ip_port(ip_address, port):
-    return (ip_address,port)
-lst = sys.argv
-ip_address = lst[1]
-port = int(lst[2])
+
+
+def getNetworkIp():
+    s2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    s2.setsockopt(socket.SOL_SOCKET, socket.SO_BROADCAST, 1)
+    s2.connect(('<broadcast>', 0))
+    return s2.getsockname()[0]
+
+ip_address = getNetworkIp()
+port = 6000
+print(ip_address)
+
+
 
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
