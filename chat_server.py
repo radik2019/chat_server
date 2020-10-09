@@ -1,6 +1,6 @@
 
-#!/bin/python3/
-import sys
+#!/usr/bin/python3
+
 import socket
 import threading
 
@@ -60,23 +60,19 @@ def read_socket():
     global numb_connect
     global list_of_sockets
     while True:
-
         for i in range(len(list_of_sockets)):
             try:
                 list_of_sockets[i].setblocking(False)
                 try:
                     request = list_of_sockets[i].recv(1024)
-
                     if not request:
                         list_of_sockets[i].close()
-
                     else:
                         for k in range(len(list_of_sockets)):
                             if list_of_sockets[i] == list_of_sockets[k]:
                                 pass
                             else:
                                 # request = f"{address_list[i]}:: {request.decode()}".encode()
-
                                 list_of_sockets[k].send(address_list[i].encode())
                                 list_of_sockets[k].send(request)
                         if numb_connect != len(list_of_sockets):
@@ -97,8 +93,7 @@ def read_socket():
                 if numb_connect != len(list_of_sockets):
                     print("number of connection = ", len(list_of_sockets))
                     print(address_list)
-                    numb_connect = len(list_of_sockets)
-                
+                    numb_connect = len(list_of_sockets)                
                 break
 
 
@@ -106,9 +101,7 @@ t1 = threading.Thread(target=add_socket)
 t2 = threading.Thread(target=read_socket)
 t1.start()
 t2.start()
-
 t1.join()
-
 t2.join()
 
 
