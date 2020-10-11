@@ -3,7 +3,8 @@
 
 import socket
 import threading
-
+from data_IO import *
+import os
 
 
 def getNetworkIp():
@@ -15,8 +16,6 @@ def getNetworkIp():
 ip_address = getNetworkIp()
 port = 6000
 print(ip_address)
-
-
 
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -31,29 +30,61 @@ server_socket.listen()
 server_socket.setblocking(False)
 print("server is running!!!")
 
+"""
+add_data(name, passw)
+user_exists(name, passw)
+remove_user(user)
+"""
 
 def add_socket():
     global numb_connect
     global list_of_sockets
     while True:
-        # print("while loop...")
+
         server_socket.setblocking(False)
         try:
             client, addr = server_socket.accept()
-            client.send("id:  ".encode())
-            name = client.recv(1024).decode()[:-1] + ":: "
 
-            list_of_sockets.append(client)
+            def riceve_json_data(data):
 
-            address_list.append(name)
-            print(f"{name} is connected")
-            if numb_connect != len(list_of_sockets):
-                print("number of connection = ", len(list_of_sockets))
-                print(address_list)
-                numb_connect = len(list_of_sockets)
+                try:
+                    with open("riceved_data.json", "wb") as fl:
+                        fl.write(data)
+                    with open("riceved_data.json") as df:
+                        client_data = json.load(df)
+                        print(client_data)
+                        return client_data
+
+                except FileNotFoundError:
+                    pass
+
+            r = client.recv(1024)
+            name = str()
+            print(r)
+            client_data = riceve_json_data(r)
+            name2 = client_data["name"]
+            passwd = client_data["password"]
+
+            # name = client.recv(1024).decode()[:-1] + ":: "
+            # client.send("password :  ".encode())
+            # passwd = client.recv(1024).decode()[:-1]
+            if user_exists(name2, passwd):
+                name = name2
+                os.remove("riceved_data.json")
+                print("json file is removed!!!")
+
+                list_of_sockets.append(client)
+
+                address_list.append(name)
+                print(f"{name} is connected")
+                if numb_connect != len(list_of_sockets):
+                    print("number of connection = ", len(list_of_sockets))
+                    print(address_list)
+                    numb_connect = len(list_of_sockets)
+            else:
+                client.close()
         except BlockingIOError:
             continue
-
 
 def read_socket():
     # numb_connect = 0
@@ -85,8 +116,7 @@ def read_socket():
                     continue
 
             except OSError:
-                print(f"{address_list[i][:-3]} is quiting..")
-
+                print(f"{address_list[i]} is quiting..")
 
                 list_of_sockets.remove(list_of_sockets[i])
                 address_list.remove(address_list[i])
