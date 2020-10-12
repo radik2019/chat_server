@@ -2,6 +2,9 @@
 import json
 import socket
 from threading import Thread
+from sys import argv
+
+
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -22,14 +25,10 @@ def add_data(name, passw):
     return doc
 
 
-def send_user_login(name, password):
-    s.send(name.encode())
-
-
 def send_message():
     global s
     while True:
-        message = input(": ")
+        message = input()
         s.send(message.encode())
 
 
@@ -38,11 +37,21 @@ def receive_message():
     while True:
         print(s.recv(1024).decode())
 
+def get_loggin(name="none", password="none"):
+    return [name, password]
+
 
 if __name__ == "__main__":
 
     connect_to_server(("192.168.1.229", 6000))
-    add_data("andrea", "134")
+    try:
+        userdata = argv
+        name, password = get_loggin(userdata[1],userdata[2])
+    except IndexError:
+        name, password = get_loggin()
+
+
+    add_data(name, password)
 
     t1 = Thread(target=receive_message)
     t2 = Thread(target=send_message)

@@ -5,6 +5,7 @@ import socket
 import threading
 from data_IO import *
 import os
+import hashlib
 
 
 def getNetworkIp():
@@ -25,7 +26,7 @@ server_socket.bind((ip_address, port))
 
 numb_connect = 0
 list_of_sockets = []
-address_list = []
+users_list = []
 server_socket.listen()
 server_socket.setblocking(False)
 print("server is running!!!")
@@ -52,7 +53,7 @@ def add_socket():
                         fl.write(data)
                     with open("riceved_data.json") as df:
                         client_data = json.load(df)
-                        print(client_data)
+
                         return client_data
 
                 except FileNotFoundError:
@@ -60,7 +61,7 @@ def add_socket():
 
             r = client.recv(1024)
             name = str()
-            print(r)
+
             client_data = riceve_json_data(r)
             name2 = client_data["name"]
             passwd = client_data["password"]
@@ -75,14 +76,15 @@ def add_socket():
 
                 list_of_sockets.append(client)
 
-                address_list.append(name)
+                users_list.append(name)
                 print(f"{name} is connected")
                 if numb_connect != len(list_of_sockets):
                     print("number of connection = ", len(list_of_sockets))
-                    print(address_list)
+                    print(users_list)
                     numb_connect = len(list_of_sockets)
             else:
                 client.close()
+                continue
         except BlockingIOError:
             continue
 
@@ -103,12 +105,12 @@ def read_socket():
                             if list_of_sockets[i] == list_of_sockets[k]:
                                 pass
                             else:
-                                # request = f"{address_list[i]}:: {request.decode()}".encode()
-                                list_of_sockets[k].send(address_list[i].encode())
-                                list_of_sockets[k].send(request)
+                                message = (users_list[i] + ": " + request.decode()).encode()
+                                list_of_sockets[k].send(message)
+                                # list_of_sockets[k].send(request)
                         if numb_connect != len(list_of_sockets):
                             print("number of connection = ", len(list_of_sockets))
-                            print(address_list)
+                            print(users_list)
                             numb_connect = len(list_of_sockets)
                         # list_of_sockets[i].close()
                         continue
@@ -116,13 +118,13 @@ def read_socket():
                     continue
 
             except OSError:
-                print(f"{address_list[i]} is quiting..")
+                print(f"{users_list[i]} is quiting..")
 
                 list_of_sockets.remove(list_of_sockets[i])
-                address_list.remove(address_list[i])
+                users_list.remove(users_list[i])
                 if numb_connect != len(list_of_sockets):
                     print("number of connection = ", len(list_of_sockets))
-                    print(address_list)
+                    print(users_list)
                     numb_connect = len(list_of_sockets)                
                 break
 
