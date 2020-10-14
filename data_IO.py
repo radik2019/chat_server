@@ -1,6 +1,7 @@
 import json
 import hashlib
 
+
 def hashing_pass(s):
     s = bytes(s, encoding="utf-8")
     return hashlib.sha256(s).hexdigest()
@@ -23,17 +24,17 @@ def user_exists(name, passw):
         dct = json.load(df)
     for user in dct:
         if (user == name) and (dct[user] == hashing_pass(passw)):
-            print("Welcome!")
+            print("[ * ] Welcome to chat!")
             return True
-    print("name or password error")
+    print("[ ! ] wrong name or password")
     return False
+
 
 """
 add_data(name, passw)
 user_exists(name, passw)
 remove_user(user)
 """
-
 
 
 def remove_user(user):
@@ -43,11 +44,12 @@ def remove_user(user):
         del(dct[user])
         with open('db.json', 'w') as file:
             json.dump(dct, file)
-        return f"the user '{user}' removed from database"
+        return f"[ ! ] the user '{user}' was successfully deleted from database"
     except KeyError:
-        return f"the user '{user}' does not exist"
+        return f"[ ! ] the user '{user}' does not exist"
+
 
 if __name__ == "__main__":
-    add_data('radu','123')
-    print(user_exists("radu","123"))
-    print(remove_user('masha'))
+    add_data('colea', '234')
+    print(user_exists("radu", "123"))
+    # print(remove_user('radu'))

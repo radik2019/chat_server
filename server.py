@@ -25,12 +25,9 @@ def add_socket():
 			continue
 
 
-
-
 def read_socket():
 	global list_of_sockets
 	while True:
-
 
 		for i in range(len(list_of_sockets)):
 			try:
@@ -42,7 +39,7 @@ def read_socket():
 						list_of_sockets[i].close()
 
 					else:
-						print(i,request.decode())
+						print(i, request.decode())
 						s = "connected  ".encode()
 						list_of_sockets[i].send(s)
 						print("number of connection = ", len(list_of_sockets))
@@ -56,12 +53,9 @@ def read_socket():
 				break
 
 
-
 t1 = threading.Thread(target=add_socket)
 t2 = threading.Thread(target=read_socket)
 t1.start()
 t2.start()
-
 t1.join()
-
 t2.join()
